@@ -8,16 +8,25 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 
+var app = express();
+
 //initialize mongoose schemas
 require('./models/models');
 var mongoose = require('mongoose');                         //add for Mongo support
-//mongoose.connect('mongodb://localhost/test-chirp');             //connect to Mongo
-mongoose.connect('mongodb://test:test@ds064718.mlab.com:64718/test-chirp'); 
+
+//connect to Mongo
+if (app.get('env') === 'production') {
+    mongoose.connect('mongodb://test:test@ds064718.mlab.com:64718/test-chirp'); 
+}
+else{
+    mongoose.connect('mongodb://localhost/test-chirp');             
+}
+
 var api = require('./routes/api');
 var authenticate = require('./routes/authenticate')(passport);
 var adminuser = require('./routes/adminuser');
 
-var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
