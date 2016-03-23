@@ -25,11 +25,20 @@ app.config(function($routeProvider){
 		.when('/register', {
 			templateUrl: 'register.html',
 			controller: 'authController'
+		})
+        //the admin user display
+		.when('/user', {
+			templateUrl: 'adminuser.html',
+			controller: 'adminUserController'
 		});
 });
 
 app.factory('postService', function($resource){
   return $resource('/api/posts/:id');
+});
+
+app.factory('userService', function($resource){
+  return $resource('/user/:id');
 });
 /*
 app.factory('postService', function($http){
@@ -59,7 +68,20 @@ app.controller('mainController', function($rootScope, $scope, postService){
 	};
 });
 
-
+app.controller('adminUserController', function($rootScope, $scope, userService){
+    $scope.users = userService.query();
+	/*$scope.newPost = {created_by: '', text: '', created_at: ''};
+	
+   
+	$scope.post = function() {
+	  $scope.newPost.created_by = $rootScope.current_user;
+	  $scope.newPost.created_at = Date.now();
+	  postService.save($scope.newPost, function(){
+	    $scope.posts = postService.query();
+	    $scope.newPost = {created_by: '', text: '', created_at: ''};
+	  });
+	};*/ 
+});
 
 
 

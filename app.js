@@ -15,8 +15,7 @@ var mongoose = require('mongoose');                         //add for Mongo supp
 mongoose.connect('mongodb://test:test@ds064718.mlab.com:64718/test-chirp'); 
 var api = require('./routes/api');
 var authenticate = require('./routes/authenticate')(passport);
-
-
+var adminuser = require('./routes/adminuser');
 
 var app = express();
 
@@ -46,6 +45,7 @@ initPassport(passport);
 
 app.use('/auth', authenticate);
 app.use('/api', api);
+app.use('/user', adminuser);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
