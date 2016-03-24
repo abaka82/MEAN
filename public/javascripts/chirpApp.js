@@ -1,6 +1,7 @@
 var app = angular.module('chirpApp', ['ngRoute', 'ngResource']).run(function($rootScope, $http) {
   $rootScope.authenticated = false;
   $rootScope.current_user = '';
+  $rootScope.current_menu = '';
 
   $rootScope.signout = function(){
     $http.get('auth/signout');
@@ -53,7 +54,7 @@ app.factory('postService', function($http){
 app.controller('mainController', function($rootScope, $scope, postService){
 	$scope.posts = postService.query();
 	$scope.newPost = {created_by: '', text: '', created_at: ''};
-	
+	$rootScope.current_menu = 'timeline';
    /* postService.getAll().success(function(data){
         $scope.posts = data;
     });
@@ -70,6 +71,8 @@ app.controller('mainController', function($rootScope, $scope, postService){
 
 app.controller('adminUserController', function($rootScope, $scope, userService){
     $scope.users = userService.query();
+    
+    $rootScope.current_menu = 'adminuser';
 	/*$scope.newPost = {created_by: '', text: '', created_at: ''};
 	
    
