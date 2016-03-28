@@ -13,5 +13,12 @@ var postSchema = new mongoose.Schema({
     text: String
 });
 
+//Hooks example
+userSchema.pre('save', function(next) {
+    //prepare for saving
+    console.log('Saving user success...');
+    return next();
+});
+
 mongoose.model('Post', postSchema);
 mongoose.model('User', userSchema);

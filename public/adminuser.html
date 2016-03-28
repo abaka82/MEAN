@@ -1,8 +1,32 @@
 	<div id="admin-user">
-		<h4>List of Users</h4>
-			<div class="post" ng-repeat="user in users | orderBy:'username'" ng-class-odd="'odd'" ng-class-even="'even'"> 
-				<p>{{user.username}}</p>
-				<small>Password {{user.password}}</small>
-				<small class="pull-right">{{user.created_at | date:"h:mma 'on' MMM d, y"}}</small>
-			</div>
+		<h4>List of Users</h4>   
+        <!--ng-table="tableParams"  -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ACTION</th>
+                    <th>USERNAME</th>
+                    <th>PASSWORD</th>
+                    <th>CREATED AT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="post" ng-repeat="user in users | orderBy:'username'" ng-class-odd="'odd'" ng-class-even="'even'"> 
+                    <td>
+                      <a class="btn btn-success btn-xs task-done" ng-click='editTableParams(user.username)' id="btn-edit-{{user.username}}">Edit</a>
+                      <a class="btn btn-danger btn-xs task-delete" 
+                        ng-really-click='deleteTableParams(user.username)' ng-really-message="Are you sure?" id="btn-delete-{{user.username}}">Delete</a>
+                    </td>
+                    <td data-title="'Username'" >
+                        {{user.username}}
+                    </td>
+                    <td data-title="'Password'" >
+                        {{user.password}}
+                    </td>
+                    <td data-title="'Created at'" >
+                        {{user.created_at | date:"h:mma 'on' MMM d, y"}}
+                    </td>    
+                </tr>
+            </tbody>
+        </table>
 	</div>

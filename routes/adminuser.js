@@ -23,7 +23,7 @@ function isAuthenticated (req, res, next) {
 };
 
 //Register the authentication middleware
-router.use('/', isAuthenticated);
+router.use('/user', isAuthenticated);
 
 
 //api for all posts
@@ -41,13 +41,29 @@ router.route('/')
 
 //api for a specfic post
 router.route('/:id')
-    //gets specified post
+
+    //gets specified User
     .get(function(req, res){
-        User.findById(req.param('id'), function(err, post){
+        
+        User.findOne({ 'username' : req.param('id') }, function(err, post){
+        //User.findById(req.param('id'), function(err, post){
             if(err)
                 res.send(err);
             res.json(post);
         });
+     })
+     
+    //delete specified User
+    .delete(function(req, res){
+        User.remove({
+            username: req.param('id')
+        }, function(err) {
+            if (err)
+                res.send(err);
+            res.json("deleted :(");
+        });
+
+
 
     });
 

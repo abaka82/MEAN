@@ -1,4 +1,4 @@
-var app = angular.module('chirpApp', ['ngRoute', 'ngResource']).run(function($rootScope, $http) {
+var app = angular.module('chirpApp', ['ngRoute', 'ngResource', 'ngTable']).run(function($rootScope, $http) {
   $rootScope.authenticated = false;
   $rootScope.current_user = '';
   $rootScope.current_menu = '';
@@ -9,6 +9,22 @@ var app = angular.module('chirpApp', ['ngRoute', 'ngResource']).run(function($ro
     $rootScope.current_user = '';
   };
 });
+
+  function ngReallyClick(){
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            element.bind('click', function() {
+                var message = attrs.ngReallyMessage;
+                if (message && confirm(message)) {
+                    scope.$apply(attrs.ngReallyClick);
+                }
+            });
+        }
+    }
+}
+app.directive('ngReallyClick', ngReallyClick);
+
 
 app.config(function($routeProvider){
 	$routeProvider
@@ -39,7 +55,7 @@ app.factory('postService', function($resource){
 });
 
 app.factory('userService', function($resource){
-  return $resource('/user/:id');
+  return $resource('/user/:id', {id: "@id"});
 });
 /*
 app.factory('postService', function($http){
@@ -69,10 +85,11 @@ app.controller('mainController', function($rootScope, $scope, postService){
 	};
 });
 
-app.controller('adminUserController', function($rootScope, $scope, userService){
-    $scope.users = userService.query();
-    
-    $rootScope.current_menu = 'adminuser';
+
+app.controller('adminUserController', function($rootScope, $scope, $filter, userService, ngTableParams){
+   $scope.users = userService.query();
+  //$scope.users = [];
+   $rootScope.current_menu = 'adminuser';
 	/*$scope.newPost = {created_by: '', text: '', created_at: ''};
 	
    
@@ -84,6 +101,54 @@ app.controller('adminUserController', function($rootScope, $scope, userService){
 	    $scope.newPost = {created_by: '', text: '', created_at: ''};
 	  });
 	};*/ 
+
+   /* $scope.usersTable = new ngTableParams({},
+    { 
+                // page size buttons (right set of buttons in demo)
+        counts: [],
+                        page: 1,
+                count: 3,
+        // determines the pager buttons (left set of buttons in demo)
+        paginationMaxBlocks: 13,
+        paginationMinBlocks: 2,
+        dataset: $scope.users
+    });
+    */    
+      $scope.editTableParams = function (id) {
+        var result = userService.get({id: id});
+        alert("Result " + result.username);
+        alert("Id " + id);
+      };
+    
+      $scope.deleteTableParams = function (id) {
+         userService.delete({id: id});
+      };
+    
+
+        $scope.tableParams = new ngTableParams({
+            page: 1,            // show first page
+            count: 3           // count per page
+          //  sorting: {
+           //     username : 'desc' // initial sorting
+           // }
+        }, {
+            getData: function($defer, params) {
+                userService.query(function(users) {
+                         console.log("Users " + users);
+                          console.log("$scope.users.length " + users.length);
+                      // var orderedRecentActivity = params.sorting() ?
+                     //                           $filter('orderBy')(users, params.orderBy()):
+                     //                           username;
+           
+                     users = users.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                     params.total( users.length);
+                     console.log("$scope.users.length 2 " + users.length);
+                      $defer.resolve(users.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+                                           console.log("$scope.users.length 3 " + users.length);
+                });
+            }
+        })
+
 });
 
 
