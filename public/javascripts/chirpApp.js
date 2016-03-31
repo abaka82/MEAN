@@ -2,6 +2,7 @@ var app = angular.module('chirpApp', ['ngRoute', 'ngResource', 'ngTable']).run(f
   $rootScope.authenticated = false;
   $rootScope.current_user = '';
   $rootScope.current_menu = '';
+  $rootScope.editedUserId = '';
 
   $rootScope.signout = function(){
     $http.get('auth/signout');
@@ -47,6 +48,10 @@ app.config(function($routeProvider){
 		.when('/user', {
 			templateUrl: 'adminuser.html',
 			controller: 'adminUserController'
+		})
+        .when('/user/edit', {
+			templateUrl: 'edituser.html',
+			controller: 'editUserController'
 		});
 });
 
@@ -55,7 +60,10 @@ app.factory('postService', function($resource){
 });
 
 app.factory('userService', function($resource){
-  return $resource('/user/:id', {id: "@id"});
+  return $resource('/user/:id', {id: "@id"},
+  {
+      'update': { method : 'PUT' }
+  });
 });
 /*
 app.factory('postService', function($http){
@@ -86,21 +94,9 @@ app.controller('mainController', function($rootScope, $scope, postService){
 });
 
 
-app.controller('adminUserController', function($rootScope, $scope, $filter, userService, ngTableParams){
+app.controller('adminUserController', function($rootScope, $scope, $location, $filter, userService, ngTableParams){
    $scope.users = userService.query();
-  //$scope.users = [];
    $rootScope.current_menu = 'adminuser';
-	/*$scope.newPost = {created_by: '', text: '', created_at: ''};
-	
-   
-	$scope.post = function() {
-	  $scope.newPost.created_by = $rootScope.current_user;
-	  $scope.newPost.created_at = Date.now();
-	  postService.save($scope.newPost, function(){
-	    $scope.posts = postService.query();
-	    $scope.newPost = {created_by: '', text: '', created_at: ''};
-	  });
-	};*/ 
 
    /* $scope.usersTable = new ngTableParams({},
     { 
@@ -115,9 +111,11 @@ app.controller('adminUserController', function($rootScope, $scope, $filter, user
     });
     */    
       $scope.editTableParams = function (id) {
-        var result = userService.get({id: id});
-        alert("Result " + result.username);
-        alert("Id " + id);
+        var result = {username: '', password: ''};  
+        result = userService.get({id: id});
+
+        $rootScope.editedUserId = id;
+        $location.path('/user/edit');         
       };
     
       $scope.deleteTableParams = function (id) {
@@ -128,7 +126,7 @@ app.controller('adminUserController', function($rootScope, $scope, $filter, user
            console.log("Deleted");
            $scope.users = userService.query();
         });
-      };
+      }; 
     
 
         $scope.tableParams = new ngTableParams({
@@ -157,6 +155,47 @@ app.controller('adminUserController', function($rootScope, $scope, $filter, user
 
 });
 
+app.controller('editUserController', function($rootScope, $scope, $location, userService){
+    
+    if($rootScope.editedUserId === ''){
+        $location.path('/user');
+    }
+    
+    $scope.user = {username: '', password: ''};    
+    $scope.user.username = $rootScope.editedUserId;
+       
+    $scope.saveUser = function (id){ 
+        var userName = $scope.user.username;
+        
+        if($scope.user.newPassword != $scope.user.confirmPassword){
+           $scope.error_message = 'Password does not match!';  
+        }
+        else
+        {
+        userService.update({ id: id }, $scope.user, function(data) {
+         if(data.state == 'failure'){
+             $scope.error_message = data.message;         
+          }
+          else{
+             $rootScope.editedUserId = '';
+             $location.path('user');  
+          }           
+         });
+        };
+    };
+    
+    $scope.cancelUser = function(){
+        $rootScope.editedUserId = '';
+        $location.path('user'); 
+    }
+    
+    
+    $scope.clearInput = function(){
+        $scope.user.newPassword = '';
+        $scope.user.confirmPassword = '';
+        $scope.error_message = '';
+    }
+});
 
 
 app.controller('authController', function($scope, $http, $rootScope, $location){

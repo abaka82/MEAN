@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 var userSchema = new mongoose.Schema({
     username: String,
     password: String, //hash created from password
-    created_at: {type: Date, default: Date.now}
+    created_at: {type: Date, default: Date.now},
+    modified_at: {type: Date}
 });
 
 var postSchema = new mongoose.Schema({

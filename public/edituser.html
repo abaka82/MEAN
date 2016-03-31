@@ -1,0 +1,12 @@
+<div>
+<form class="form-auth" ng-submit="saveUser(user.username)">
+	<h2>Edit User</h2>
+	<p class="text-warning">{{error_message}}</p>
+    <label>User Name</label> <input type="username" ng-model="user.username" placeholder="Username" class="form-control" disabled><br>
+    <label>New Password</label> <input type="password" ng-model="user.newPassword" placeholder="Password" class="form-control"><br>
+    <label>Confirm Password</label> <input type="password" ng-model="user.confirmPassword" placeholder="Password" class="form-control"><br>
+	<input type="submit" value="Save" class="btn btn-primary" />
+    <input type="button" value="Cancel" class="btn" ng-click="cancelUser()" />`
+    <input type="button" value="Clear" class="btn" ng-click="clearInput()" />
+</form>
+</div>

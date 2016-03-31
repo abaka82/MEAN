@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var bCrypt = require('bcrypt-nodejs');
 var mongoose = require( 'mongoose' );
 var User = mongoose.model('User');
 
@@ -36,7 +36,7 @@ router.route('/')
                 return res.send(500, err);
             }
             return res.send(posts);
-        });
+        });        
     });
 
 //api for a specfic post
@@ -44,12 +44,11 @@ router.route('/:id')
 
     //gets specified User
     .get(function(req, res){
-        
-        User.findOne({ 'username' : req.param('id') }, function(err, post){
+        User.findOne({ 'username' : req.param('id') }, function(err, user){
         //User.findById(req.param('id'), function(err, post){
             if(err)
                 res.send(err);
-            res.json(post);
+            res.json(user);
         });
      })
      
@@ -62,9 +61,29 @@ router.route('/:id')
                 res.send(err);
             res.json("deleted :(");
         });
+    })
 
+    //update specified User
+    .put(function(req, res) {
+           User.findOne({ 'username' : req.param('id') }, function(err, user){            
+                user.username = req.body.username;
+                user.password = createHash(req.body.newPassword);               
+                user.modified_at = new Date();
+                user.save(function(err, user){
+                    if(err)
+                        res.send(err);
 
-
+                    res.json(user);
+                });                
+            });
     });
+
+    var isValidPassword = function(user, password){
+        return bCrypt.compareSync(password, user.password);
+    };
+    // Generates hash using bCrypt
+    var createHash = function(password){
+        return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
+    };
 
 module.exports = router;

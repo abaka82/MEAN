@@ -6,8 +6,8 @@
                 <tr>
                     <th>ACTION</th>
                     <th>USERNAME</th>
-                    <th>PASSWORD</th>
                     <th>CREATED AT</th>
+                    <th>MODIFIED AT</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,11 +20,11 @@
                     <td data-title="'Username'" >
                         {{user.username}}
                     </td>
-                    <td data-title="'Password'" >
-                        {{user.password}}
-                    </td>
                     <td data-title="'Created at'" >
                         {{user.created_at | date:"h:mma 'on' MMM d, y"}}
+                    </td>    
+                    <td data-title="'Modified at'" >
+                        {{user.modified_at | date:"h:mma 'on' MMM d, y"}}
                     </td>    
                 </tr>
             </tbody>
