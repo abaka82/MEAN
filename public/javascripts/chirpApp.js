@@ -121,7 +121,13 @@ app.controller('adminUserController', function($rootScope, $scope, $filter, user
       };
     
       $scope.deleteTableParams = function (id) {
-         userService.delete({id: id});
+
+        return userService.delete({id: id}, function()
+         {
+            // $scope.users.splice(1, 1)
+           console.log("Deleted");
+           $scope.users = userService.query();
+        });
       };
     
 
